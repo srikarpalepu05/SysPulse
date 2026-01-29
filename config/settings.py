@@ -1,0 +1,2 @@
+METRIC_INTERVAL_SECONDS = 5
+DATABASE_PATH = "syspulse.db"
