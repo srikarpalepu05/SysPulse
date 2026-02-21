@@ -1,99 +1,57 @@
-⭐ UPDATED SYSPULSE README 
-SysPulse — Intelligent System Health, Security & Performance Monitoring Platform (In Progress)
+# SysPulse — Intelligent System Health, Security & Performance Monitoring Platform (In Progress)
 
-⚠️ NOTE: SysPulse, NetScope, and PacketTrail have been moved from my previous GitHub account (srikar-palepu) as part of a cleanup and reorganization effort.
+> [!IMPORTANT]  
+> **NOTE:** SysPulse, NetScope, and PacketTrail have been moved from my previous GitHub account (`srikar-palepu`) as part of a cleanup and reorganization effort.
 
-SysPulse is an evolving system health, security, and performance monitoring platform designed to collect, store, and analyze system metrics across multiple machines. The project is being actively developed as part of a broader effort to build a lightweight, extensible monitoring and anomaly-detection framework.
+SysPulse is an evolving system health, security, and performance monitoring platform designed to collect, store, and analyze system metrics across multiple machines. The project is currently under active development.
 
-🚀 Current Capabilities
+## 🚀 Current Capabilities
+- **✔ Local System Metrics Collection**
+  - CPU usage, memory usage, disk activity, network I/O
+  - Built using [psutil](https://psutil.readthedocs.io)
+  - Modular collectors for easy expansion
+- **✔ Persistent Local Storage**
+  - SQLite backend
+  - Efficient schema for historical querying
+  - Supports emerging analytics workflows
+- **✔ Modular Architecture**
+  - Clean folder structure
+  - Easy to integrate new collectors, alerting modules, or external APIs
 
-SysPulse currently includes the foundational components necessary for reliable system monitoring:
+## 🛠️ Planned Features (Under Development)
+- **🔹 Distributed Agent Support**
+  - Lightweight agents running remotely and sending metric streams to a central server.
+- **🔹 Threshold-Based Alerting**
+  - Custom triggers for: CPU spikes, memory leaks, and unusual network activity.
+- **🔹 Historical Analytics Dashboard**
+  - Long-term trends and insights for performance and reliability.
+- **🔹 AI-Assisted Anomaly Detection (Upcoming)**
+  - Using [scikit-learn](https://scikit-learn.org) models for pattern recognition and early failure warnings.
+  - *Note: AI features are in prototyping stage and not yet fully integrated.*
+- **🔹 Cloud-Ready Architecture**
+  - Future upgrades aimed at centralized ingestion APIs, scalable storage, and real-time web dashboards.
 
-✔ Local System Metrics Collection
+## 🧪 Tech Stack
+*   **Core:** [Python](https://www.python.org) & [SQLite](https://www.sqlite.org)
+*   **Monitoring:** [psutil](https://github.com)
+*   **Data Science (Planned):** [Pandas](https://pandas.pydata.org) & [scikit-learn](https://scikit-learn.org)
+*   **Infrastructure (Planned):** [Flask](https://flask.palletsprojects.com) & [Docker](https://www.docker.com)
 
-CPU usage, memory usage, disk activity, network I/O
+## 📌 Project Status
+> SysPulse is a **work in progress**, actively expanding into system health analytics, distributed monitoring, and AI-based anomaly detection.
 
-Built with psutil and modular internal collectors
+## 📫 Contact
+For questions or collaboration:  
+📧 **[srikarpalepu05@gmail.com](mailto:srikarpalepu05@gmail.com)**
 
-✔ Persistent Local Storage
 
-Metrics stored in SQLite for historical querying
+## 📁 Project Structure
+```text
+sysPulse/
+│── agents/        # Remote collectors (in progress)
+│── storage/       # SQLite schema + migrations
+│── core/          # Ingestion + processing
+│── analysis/      # ML + anomaly detection (future)
+│── cli/           # Command-line utilities (future)
 
-Structured schema for easy expansion
 
-✔ Modular Architecture
-
-Designed so new collectors, alert rules, or integrations can be added cleanly
-
-Early support for multi-file processing and flexible data ingestion
-
-🛠️ Planned Features (Under Development)
-
-These features are actively being implemented, researched, or designed:
-
-🔹 Distributed Agent Support
-
-Lightweight agents running on multiple machines that send metrics to a central server.
-
-🔹 Rule-Based Alerting
-
-Threshold triggers for CPU spikes, memory leaks, unusual network behavior, etc.
-
-🔹 Historical Analytics Dashboard
-
-Trend visualization for long-term performance and reliability tracking.
-
-🔹 AI-Assisted Anomaly Detection (Upcoming)
-
-Basic ML-based outlier detection using scikit-learn:
-
-Identify irregular usage patterns
-
-Highlight unusual authentication or network events
-
-Provide early warning for potential failures or security concerns
-
-(This component is currently being prototyped; not production-ready yet.)
-
-🔹 Cloud-Ready Architecture
-
-Long-term plans include:
-
-Centralized API service
-
-Scalable storage backend
-
-Real-time web dashboard for aggregated metrics
-
-🧩 Project Structure
-/sysPulse
-  /agents         # Lightweight metric collectors (in progress)
-  /storage        # SQLite schemas + migration tools
-  /core           # Core ingestion + processing modules
-  /analysis       # Planned ML + anomaly detection components
-  /cli            # Command-line utilities (future)
-🧪 Tech Stack
-
-Python
-
-SQLite
-
-psutil
-
-Pandas / scikit-learn (planned ML modules)
-
-Flask (planned)
-
-Docker (planned containerization)
-
-📌 Project Status
-
-SysPulse is a work in progress with ongoing development.
-Features will continue to be added as the design evolves.
-
-You can follow updates through commits and version notes as the project scales toward a distributed, intelligent monitoring system.
-
-📫 Contact
-
-For any questions or collaboration interests:
-📧 srikarpalepu05@gmail.com
