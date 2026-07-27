@@ -17,8 +17,12 @@ func main() {
 	}
 	defer db.Close()
 
+	if err := storage.EnsureStartupTable(db); err != nil {
+		log.Fatalf("ensure startup table: %v", err)
+	}
+
 	fmt.Println("SysPulse Background Monitor started")
-	fmt.Println("Monitoring process activity every 10 seconds. Press Ctrl+C to stop.\n")
+	fmt.Println("Monitoring process activity and startup items every 10 seconds. Press Ctrl+C to stop.\n")
 
 	for {
 		snapshots, err := collector.Collect()
@@ -39,6 +43,24 @@ func main() {
 			if err := storage.SaveAlert(db, alert); err != nil {
 				log.Printf("save alert: %v", err)
 			}
+		}
+
+		startupEntries, err := collector.CollectStartupEntries()
+		if err != nil {
+			fmt.Println("Failed to collect startup entries:", err)
+		} else {
+			for _, entry := range startupEntries {
+				if err := storage.SaveStartupEntry(db, storage.StartupRecord{
+					Name:      entry.Name,
+					Command:   entry.Command,
+					Source:    entry.Source,
+					Location:  entry.Location,
+					Timestamp: entry.Timestamp,
+				}); err != nil {
+					log.Printf("save startup entry: %v", err)
+				}
+			}
+			fmt.Printf("Startup entries captured: %d\n", len(startupEntries))
 		}
 
 		fmt.Printf("Processes scanned: %d | Alerts: %d\n", len(snapshots), len(alerts))
