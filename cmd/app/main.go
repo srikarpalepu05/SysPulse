@@ -49,7 +49,14 @@ func main() {
 		if err != nil {
 			fmt.Println("Failed to collect startup entries:", err)
 		} else {
+			seenStartup := make(map[string]struct{}, len(startupEntries))
 			for _, entry := range startupEntries {
+				key := fmt.Sprintf("%s|%s|%s", entry.Source, entry.Name, entry.Command)
+				if _, exists := seenStartup[key]; exists {
+					continue
+				}
+				seenStartup[key] = struct{}{}
+
 				if err := storage.SaveStartupEntry(db, storage.StartupRecord{
 					Name:      entry.Name,
 					Command:   entry.Command,
