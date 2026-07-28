@@ -62,7 +62,8 @@ func main() {
 			}
 
 			startupRisks := rules.ScoreStartupEntries(startupEntries)
-			fmt.Printf("Startup entries captured: %d | Risk-scored: %d\n", len(startupEntries), len(startupRisks))
+			recommendations := rules.StartupRecommendations(startupRisks)
+			fmt.Printf("Startup entries captured: %d | Risk-scored: %d | Recommendations: %d\n", len(startupEntries), len(startupRisks), len(recommendations))
 			if len(startupRisks) == 0 {
 				fmt.Println("No startup items matched the risk heuristics.")
 			} else {
@@ -73,6 +74,13 @@ func main() {
 						risk.Score,
 						risk.Source,
 						risk.Reason,
+					)
+				}
+				for _, rec := range recommendations {
+					fmt.Printf("[%s] %s — Action: %s\n",
+						rec.Severity,
+						rec.Name,
+						rec.Action,
 					)
 				}
 			}
