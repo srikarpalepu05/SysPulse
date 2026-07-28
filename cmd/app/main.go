@@ -20,9 +20,11 @@ func main() {
 	if err := storage.EnsureStartupTable(db); err != nil {
 		log.Fatalf("ensure startup table: %v", err)
 	}
-
+	if err := storage.EnsureBaselineTable(db); err != nil {
+		log.Fatalf("ensure baseline table: %v", err)
+	}
 	fmt.Println("SysPulse Background Monitor started")
-	fmt.Println("Monitoring process activity and startup items every 10 seconds. Press Ctrl+C to stop.\n")
+	fmt.Println("Monitoring process activity every 10 seconds. Press Ctrl+C to stop.\n")
 
 	for {
 		snapshots, err := collector.Collect()
@@ -66,6 +68,17 @@ func main() {
 				}); err != nil {
 					log.Printf("save startup entry: %v", err)
 				}
+			}
+
+			baseline := collector.CaptureBaseline(startupEntries, snapshots)
+			baselineSnapshot := storage.BaselineSnapshot{
+				GeneratedAt:  baseline["generated_at"].(time.Time),
+				StartupCount: baseline["startup_count"].(int),
+				ProcessCount: baseline["process_count"].(int),
+				Summary:      baseline["summary"].(string),
+			}
+			if err := storage.SaveBaseline(db, baselineSnapshot); err != nil {
+				log.Printf("save baseline: %v", err)
 			}
 
 			startupRisks := rules.ScoreStartupEntries(startupEntries)
