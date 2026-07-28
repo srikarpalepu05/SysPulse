@@ -60,7 +60,22 @@ func main() {
 					log.Printf("save startup entry: %v", err)
 				}
 			}
-			fmt.Printf("Startup entries captured: %d\n", len(startupEntries))
+
+			startupRisks := rules.ScoreStartupEntries(startupEntries)
+			fmt.Printf("Startup entries captured: %d | Risk-scored: %d\n", len(startupEntries), len(startupRisks))
+			if len(startupRisks) == 0 {
+				fmt.Println("No startup items matched the risk heuristics.")
+			} else {
+				for _, risk := range startupRisks {
+					fmt.Printf("[%s] %s — score %d — %s — %s\n",
+						risk.Severity,
+						risk.Name,
+						risk.Score,
+						risk.Source,
+						risk.Reason,
+					)
+				}
+			}
 		}
 
 		fmt.Printf("Processes scanned: %d | Alerts: %d\n", len(snapshots), len(alerts))
