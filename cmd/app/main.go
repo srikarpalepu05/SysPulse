@@ -79,6 +79,13 @@ func main() {
 					for _, finding := range findings {
 						fmt.Printf("[%s] %s | baseline=%d current=%d\n", finding.Severity, finding.Message, finding.Baseline, finding.Current)
 					}
+					recommendations := analysis.DriftRecommendations(findings)
+					for _, recommendation := range recommendations {
+						fmt.Printf("[%s] %s — %s\n", recommendation.Severity, recommendation.Type, recommendation.Action)
+					}
+					fmt.Println(analysis.DriftSummary(findings))
+				} else {
+					fmt.Println(analysis.DriftSummary(nil))
 				}
 			}
 
