@@ -5,6 +5,7 @@ import (
 	"log"
 	"time"
 
+	"syspulse/internal/analysis"
 	"syspulse/internal/collector"
 	"syspulse/internal/rules"
 	"syspulse/internal/storage"
@@ -24,7 +25,7 @@ func main() {
 		log.Fatalf("ensure baseline table: %v", err)
 	}
 	fmt.Println("SysPulse Background Monitor started")
-	fmt.Println("Monitoring process activity every 10 seconds. Press Ctrl+C to stop.\n")
+	fmt.Println("Monitoring process activity every 10 seconds. Press Ctrl+C to stop.")
 
 	for {
 		snapshots, err := collector.Collect()
@@ -67,6 +68,17 @@ func main() {
 					Timestamp: entry.Timestamp,
 				}); err != nil {
 					log.Printf("save startup entry: %v", err)
+				}
+			}
+
+			latestBaseline, err := storage.GetLatestBaseline(db)
+			if err == nil {
+				findings := analysis.DetectDrift(latestBaseline, startupEntries, snapshots)
+				if len(findings) > 0 {
+					fmt.Println("Baseline drift detected:")
+					for _, finding := range findings {
+						fmt.Printf("[%s] %s | baseline=%d current=%d\n", finding.Severity, finding.Message, finding.Baseline, finding.Current)
+					}
 				}
 			}
 

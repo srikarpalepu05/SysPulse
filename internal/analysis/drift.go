@@ -1,21 +1,19 @@
 package analysis
-package analysis
 
 import (
 	"fmt"
-	"strings"
 
 	"syspulse/internal/collector"
 	"syspulse/internal/storage"
 )
 
 type DriftFinding struct {
-	Type      string
-	Message   string
-	Severity  string
-	Count     int
-	Baseline  int
-	Current   int
+	Type     string
+	Message  string
+	Severity string
+	Count    int
+	Baseline int
+	Current  int
 }
 
 func DetectDrift(baseline storage.BaselineSnapshot, startupEntries []collector.StartupEntry, snapshots []collector.ProcessSnapshot) []DriftFinding {
@@ -24,11 +22,11 @@ func DetectDrift(baseline storage.BaselineSnapshot, startupEntries []collector.S
 	startupDelta := len(startupEntries) - baseline.StartupCount
 	if startupDelta != 0 {
 		severity := "low"
-		if startupDelta >= 2 || startupDelta <= -2 {
-			severity = "medium"
-		}
-		if startupDelta >= 4 || startupDelta <= -4 {
+		switch {
+		case startupDelta >= 4 || startupDelta <= -4:
 			severity = "high"
+		case startupDelta >= 2 || startupDelta <= -2:
+			severity = "medium"
 		}
 
 		findings = append(findings, DriftFinding{
@@ -44,11 +42,11 @@ func DetectDrift(baseline storage.BaselineSnapshot, startupEntries []collector.S
 	processDelta := len(snapshots) - baseline.ProcessCount
 	if processDelta != 0 {
 		severity := "low"
-		if processDelta >= 5 || processDelta <= -5 {
-			severity = "medium"
-		}
-		if processDelta >= 10 || processDelta <= -10 {
+		switch {
+		case processDelta >= 10 || processDelta <= -10:
 			severity = "high"
+		case processDelta >= 5 || processDelta <= -5:
+			severity = "medium"
 		}
 
 		findings = append(findings, DriftFinding{
@@ -59,32 +57,6 @@ func DetectDrift(baseline storage.BaselineSnapshot, startupEntries []collector.S
 			Current:  len(snapshots),
 			Count:    processDelta,
 		})
-	}
-
-	startupNames := make(map[string]bool)
-	for _, entry := range startupEntries {
-		startupNames[strings.ToLower(strings.TrimSpace(entry.Name))] = true
-	}
-
-	if len(startupEntries) > baseline.StartupCount {
-		newEntries := 0
-		for _, entry := range startupEntries {
-			name := strings.ToLower(strings.TrimSpace(entry.Name))
-			if name == "" {
-				continue
-			}
-			if !strings.Contains(strings.ToLower(baseline.Summary), name) {
-				newEntries++
-			}
-		}
-		if newEntries > 0 {
-			findings = append(findings, DriftFinding{
-				Type:     "startup",
-				Message:  fmt.Sprintf("%d new startup entries detected compared to the baseline", newEntries),
-				Severity: "medium",
-				Count:    newEntries,
-			})
-		}
 	}
 
 	return findings
