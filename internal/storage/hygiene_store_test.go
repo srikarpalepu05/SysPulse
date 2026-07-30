@@ -22,11 +22,11 @@ func TestSaveAndGetLatestHygieneReport(t *testing.T) {
 	}
 
 	report := HygieneReport{
-		Timestamp:     time.Now(),
-		Score:         81,
-		Status:        "healthy",
-		Reason:        "System is stable",
-		RiskBreakdown: "startup drift: 12 | process drift: 6",
+		Timestamp:      time.Now(),
+		Score:          81,
+		Status:         "healthy",
+		Reason:         "System is stable",
+		RiskBreakdown:  "startup drift: 12 | process drift: 6",
 		Recommendation: "Review startup entries",
 	}
 
