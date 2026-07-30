@@ -24,6 +24,9 @@ func main() {
 	if err := storage.EnsureBaselineTable(db); err != nil {
 		log.Fatalf("ensure baseline table: %v", err)
 	}
+	if err := storage.EnsureHygieneTable(db); err != nil {
+		log.Fatalf("ensure hygiene table: %v", err)
+	}
 	fmt.Println("SysPulse Background Monitor started")
 	fmt.Println("Monitoring process activity every 10 seconds. Press Ctrl+C to stop.")
 
@@ -80,6 +83,19 @@ func main() {
 				fmt.Printf("Status: %s | %s\n", hygiene.Status, hygiene.Reason)
 				fmt.Printf("Risk breakdown: %s\n", analysis.RiskBreakdownSummary(breakdown))
 				fmt.Println(analysis.FixRecommendationSummary(breakdown, hygiene.Score))
+
+				hygieneReport := storage.HygieneReport{
+					Timestamp:      time.Now(),
+					Score:          hygiene.Score,
+					Status:         hygiene.Status,
+					Reason:         hygiene.Reason,
+					RiskBreakdown:  analysis.RiskBreakdownSummary(breakdown),
+					Recommendation: analysis.FixRecommendation(breakdown, hygiene.Score),
+				}
+				if err := storage.SaveHygieneReport(db, hygieneReport); err != nil {
+					log.Printf("save hygiene report: %v", err)
+				}
+
 				if len(findings) > 0 {
 					fmt.Println("Baseline drift detected:")
 					for _, finding := range findings {
