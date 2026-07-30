@@ -79,6 +79,7 @@ func main() {
 				fmt.Println(analysis.SecurityHygieneSummary(hygiene.Score, hygiene.Status))
 				fmt.Printf("Status: %s | %s\n", hygiene.Status, hygiene.Reason)
 				fmt.Printf("Risk breakdown: %s\n", analysis.RiskBreakdownSummary(breakdown))
+				fmt.Println(analysis.FixRecommendationSummary(breakdown, hygiene.Score))
 				if len(findings) > 0 {
 					fmt.Println("Baseline drift detected:")
 					for _, finding := range findings {

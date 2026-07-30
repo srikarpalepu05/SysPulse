@@ -9,10 +9,10 @@ import (
 )
 
 type RiskBreakdown struct {
-	StartupRisk int
-	ProcessRisk int
+	StartupRisk       int
+	ProcessRisk       int
 	SuspiciousStartup int
-	Total int
+	Total             int
 }
 
 func ComputeRiskBreakdown(baseline storage.BaselineSnapshot, startupEntries []collector.StartupEntry, snapshots []collector.ProcessSnapshot) RiskBreakdown {
