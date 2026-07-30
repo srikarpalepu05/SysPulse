@@ -75,7 +75,8 @@ func main() {
 			if err == nil {
 				findings := analysis.DetectDrift(latestBaseline, startupEntries, snapshots)
 				hygiene := analysis.ComputeHygieneScore(latestBaseline, startupEntries, snapshots)
-				fmt.Printf("System hygiene score: %d | status=%s | %s\n", hygiene.Score, hygiene.Status, hygiene.Reason)
+				fmt.Println(analysis.SecurityHygieneSummary(hygiene.Score, hygiene.Status))
+				fmt.Printf("Status: %s | %s\n", hygiene.Status, hygiene.Reason)
 				if len(findings) > 0 {
 					fmt.Println("Baseline drift detected:")
 					for _, finding := range findings {

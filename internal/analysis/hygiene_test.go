@@ -51,3 +51,13 @@ func TestHygieneScoreReturnsHealthyStateForCleanBaseline(t *testing.T) {
 		t.Fatalf("expected healthy status, got %s", score.Status)
 	}
 }
+
+func TestSecurityHygieneSummaryBuildsFriendlyStatus(t *testing.T) {
+	summary := SecurityHygieneSummary(82, "healthy")
+	if summary == "" {
+		t.Fatal("expected non-empty summary")
+	}
+	if summary != "System hygiene is healthy (score: 82/100)" {
+		t.Fatalf("unexpected summary value: %q", summary)
+	}
+}
