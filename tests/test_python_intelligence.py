@@ -78,3 +78,18 @@ def test_compute_risk_summary_reads_history_and_reports_trend(tmp_path):
     assert "chrome" in summary["top_processes"]
     assert summary["startup_items_count"] == 2
     assert summary["risk_level"] in {"low", "moderate", "high"}
+
+
+def test_compute_risk_summary_handles_missing_tables(tmp_path):
+    db_path = tmp_path / "missing.db"
+    conn = sqlite3.connect(db_path)
+    conn.close()
+
+    summary = compute_risk_summary(str(db_path))
+
+    assert summary["latest_score"] == 0
+    assert summary["average_score"] == 0.0
+    assert summary["trend"] == "stable"
+    assert summary["top_processes"] == []
+    assert summary["startup_items_count"] == 0
+    assert summary["risk_level"] == "low"
