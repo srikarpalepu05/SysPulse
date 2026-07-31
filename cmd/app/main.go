@@ -74,7 +74,8 @@ func main() {
 				}
 			}
 
-			latestBaseline, err := storage.GetLatestBaseline(db)
+			var latestBaseline storage.BaselineSnapshot
+			latestBaseline, err = storage.GetLatestBaseline(db)
 			if err == nil {
 				findings := analysis.DetectDrift(latestBaseline, startupEntries, snapshots)
 				hygiene := analysis.ComputeHygieneScore(latestBaseline, startupEntries, snapshots)
@@ -109,6 +110,16 @@ func main() {
 				} else {
 					fmt.Println(analysis.DriftSummary(nil))
 				}
+			}
+
+			anomalies := analysis.DetectAnomalies(latestBaseline, snapshots)
+			if len(anomalies) > 0 {
+				fmt.Println("Anomalies detected:")
+				for _, anomaly := range anomalies {
+					fmt.Printf("[%s] %s (PID %d) — %s\n", anomaly.Severity, anomaly.ProcessName, anomaly.PID, anomaly.Reason)
+				}
+			} else {
+				fmt.Println("No anomaly patterns detected.")
 			}
 
 			baseline := collector.CaptureBaseline(startupEntries, snapshots)
