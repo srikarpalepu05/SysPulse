@@ -19,6 +19,8 @@ def compute_risk_summary(db_path: str) -> dict[str, Any]:
             "top_processes": [],
             "startup_items_count": 0,
             "risk_level": "low",
+            "recent_alerts": [],
+            "needs_attention": "No data yet. Start the monitor to build history.",
         }
 
     conn.row_factory = sqlite3.Row
@@ -52,6 +54,21 @@ def compute_risk_summary(db_path: str) -> dict[str, Any]:
         startup_rows = conn.execute(
             "SELECT COUNT(*) AS total FROM startup_items"
         ).fetchone()
+
+        alert_table_exists = conn.execute(
+            "SELECT 1 FROM sqlite_master WHERE type='table' AND name='alerts'"
+        ).fetchone()
+        if alert_table_exists:
+            alert_rows = conn.execute(
+                """
+                SELECT process_name, severity, reason
+                FROM alerts
+                ORDER BY id DESC
+                LIMIT 5
+                """
+            ).fetchall()
+        else:
+            alert_rows = []
     except sqlite3.Error:
         conn.close()
         return {
@@ -61,6 +78,8 @@ def compute_risk_summary(db_path: str) -> dict[str, Any]:
             "top_processes": [],
             "startup_items_count": 0,
             "risk_level": "low",
+            "recent_alerts": [],
+            "needs_attention": "No data yet. Start the monitor to build history.",
         }
 
     latest_score = latest_hygiene["score"] if latest_hygiene else 0
@@ -93,6 +112,22 @@ def compute_risk_summary(db_path: str) -> dict[str, Any]:
     else:
         risk_level = "high"
 
+    recent_alerts = [
+        {
+            "process_name": row["process_name"],
+            "severity": row["severity"],
+            "reason": row["reason"],
+        }
+        for row in alert_rows
+    ]
+
+    if risk_level == "high":
+        needs_attention = "Immediate review recommended: check high-risk processes and startup items."
+    elif risk_level == "moderate":
+        needs_attention = "Monitor closely and review suspicious processes before they escalate."
+    else:
+        needs_attention = "System looks stable; keep monitoring for unusual changes."
+
     return {
         "latest_score": latest_score,
         "average_score": average_score,
@@ -100,6 +135,8 @@ def compute_risk_summary(db_path: str) -> dict[str, Any]:
         "top_processes": top_processes,
         "startup_items_count": startup_rows["total"] if startup_rows else 0,
         "risk_level": risk_level,
+        "recent_alerts": recent_alerts,
+        "needs_attention": needs_attention,
     }
 
 
@@ -107,6 +144,12 @@ def build_risk_report(db_path: str) -> str:
     """Render a text summary suitable for a terminal dashboard."""
     summary = compute_risk_summary(db_path)
     top_processes = ", ".join(summary["top_processes"]) if summary["top_processes"] else "none"
+    alerts = summary["recent_alerts"]
+
+    alert_lines = [
+        f"- {alert['process_name']} [{alert['severity']}]: {alert['reason']}"
+        for alert in alerts
+    ] or ["- none"]
 
     return (
         "SysPulse Python Intelligence Report\n"
@@ -116,7 +159,11 @@ def build_risk_report(db_path: str) -> str:
         f"Trend: {summary['trend']}\n"
         f"Risk level: {summary['risk_level']}\n"
         f"Startup items: {summary['startup_items_count']}\n"
-        f"Top processes: {top_processes}\n"
+        f"Top processes: {top_processes}\n\n"
+        "Recent alerts:\n"
+        + "\n".join(alert_lines)
+        + "\n\n"
+        + f"Needs attention: {summary['needs_attention']}\n"
     )
 
 
