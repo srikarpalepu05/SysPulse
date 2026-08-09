@@ -42,7 +42,7 @@ A Python-based intelligence layer is also being created to read the stored data 
 
 This intelligence layer is still in its early stage, but it is now an actual part of the project instead of just being an idea.
 
-### ⚠️ UI is intentionally deferred
+### ⚠️ UI is still in progress
 The project is prioritizing the working logic first. A polished desktop experience is not the main goal right now. The important thing is to make the monitoring, scoring, and data collection reliable before spending time on visual polish.
 
 ## What is already working
@@ -129,13 +129,9 @@ SysPulse/
 ├── README.md              # project overview and roadmap
 ```
 
-## Project direction
-The project is intentionally being built step by step. The idea is to solve the real local security and hygiene problem first, then add the intelligence and polish around it.
 
-That makes the project more realistic and more useful. Instead of building a flashy interface before the system works, the focus is on building something that can actually observe, evaluate, and explain what is happening on a machine.
 
 ## Contact
-For questions or collaboration:
 
 📧 [srikarpalepu05@gmail.com](mailto:srikarpalepu05@gmail.com)
 
